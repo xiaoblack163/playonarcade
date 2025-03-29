@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,10 +13,48 @@
             font-family: 'Press Start 2P', cursive;
         }
         
+        /* Game container responsive adjustments */
+        .game-container {
+            width: 100%;
+            position: relative;
+            background-color: black;
+        }
+        
+        /* Landscape mode (default) */
         .game-container {
             aspect-ratio: 16/9;
-            height: calc(100vh - 180px);
-            max-height: 700px;
+            max-height: 70vh;
+        }
+        
+        /* Portrait mode adjustments */
+        @media (max-width: 640px) and (orientation: portrait) {
+            .game-container {
+                aspect-ratio: 9/16;
+                height: 60vh;
+            }
+        }
+        
+        /* Better landscape support on mobile */
+        @media (max-width: 640px) and (orientation: landscape) {
+            .game-container {
+                aspect-ratio: 16/9;
+                height: 75vh;
+            }
+            
+            .header-compact {
+                padding-top: 4px;
+                padding-bottom: 4px;
+            }
+            
+            .game-section-compact {
+                padding-top: 6px;
+                padding-bottom: 6px;
+            }
+            
+            .footer-compact {
+                padding-top: 2px;
+                padding-bottom: 2px;
+            }
         }
         
         .pixel-border {
@@ -42,78 +79,135 @@
             0% { transform: translateX(-100px); }
             100% { transform: translateX(calc(100vw + 100px)); }
         }
+        
+        /* Mobile menu transition */
+        .mobile-menu {
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+        
+        .mobile-menu.hidden {
+            transform: translateY(-100%);
+            opacity: 0;
+        }
+        
+        /* Fullscreen button styles */
+        .fullscreen-btn {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 4px;
+            padding: 5px;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
     </style>
 </head>
 <body class="bg-blue-500 mario-bg-pattern text-white flex flex-col min-h-screen">
-    <!-- Cloud decorations -->
-    <div class="fixed top-20 cloud-animation opacity-70" style="animation-delay: 0s; z-index: 1;">
-        <div class="bg-white w-24 h-8 rounded-full relative">
-            <div class="bg-white w-10 h-10 rounded-full absolute -top-6 left-4"></div>
-            <div class="bg-white w-10 h-10 rounded-full absolute -top-5 left-10"></div>
-            <div class="bg-white w-10 h-10 rounded-full absolute -top-4 right-4"></div>
+    <!-- Cloud decorations - adjusted size for mobile -->
+    <div class="fixed top-20 cloud-animation opacity-70 scale-75 sm:scale-100" style="animation-delay: 0s; z-index: 1;">
+        <div class="bg-white w-16 sm:w-24 h-6 sm:h-8 rounded-full relative">
+            <div class="bg-white w-8 sm:w-10 h-8 sm:h-10 rounded-full absolute -top-5 sm:-top-6 left-3 sm:left-4"></div>
+            <div class="bg-white w-8 sm:w-10 h-8 sm:h-10 rounded-full absolute -top-4 sm:-top-5 left-7 sm:left-10"></div>
+            <div class="bg-white w-8 sm:w-10 h-8 sm:h-10 rounded-full absolute -top-3 sm:-top-4 right-3 sm:right-4"></div>
         </div>
     </div>
-    <div class="fixed top-40 cloud-animation opacity-70" style="animation-delay: 10s; z-index: 1;">
-        <div class="bg-white w-32 h-10 rounded-full relative">
-            <div class="bg-white w-12 h-12 rounded-full absolute -top-8 left-6"></div>
-            <div class="bg-white w-12 h-12 rounded-full absolute -top-6 left-14"></div>
-            <div class="bg-white w-12 h-12 rounded-full absolute -top-5 right-5"></div>
+    <div class="fixed top-40 cloud-animation opacity-70 scale-75 sm:scale-100" style="animation-delay: 10s; z-index: 1;">
+        <div class="bg-white w-24 sm:w-32 h-8 sm:h-10 rounded-full relative">
+            <div class="bg-white w-10 sm:w-12 h-10 sm:h-12 rounded-full absolute -top-6 sm:-top-8 left-4 sm:left-6"></div>
+            <div class="bg-white w-10 sm:w-12 h-10 sm:h-12 rounded-full absolute -top-5 sm:-top-6 left-10 sm:left-14"></div>
+            <div class="bg-white w-10 sm:w-12 h-10 sm:h-12 rounded-full absolute -top-4 sm:-top-5 right-4 sm:right-5"></div>
         </div>
     </div>
 
     <!-- Header/Nav -->
-    <header class="bg-red-600 text-white border-b-4 border-yellow-400 sticky top-0 z-20">
+    <header id="siteHeader" class="bg-red-600 text-white border-b-4 border-yellow-400 sticky top-0 z-20">
         <div class="container mx-auto px-4 py-3 flex justify-between items-center">
             <div class="flex items-center">
-                <!-- <img src="/api/placeholder/40/40" alt="Mario Hat" class="mr-3"> -->
-                <h1 class="mario-font text-xl md:text-2xl">SUPER MARIO PLAY</h1>
+                <h1 class="mario-font text-sm sm:text-xl md:text-2xl">SUPER MARIO PLAY</h1>
             </div>
             <nav class="hidden md:flex space-x-6">
                 <a href="#" class="hover:text-yellow-300 transition-colors mario-font text-sm">HOME</a>
                 <a href="#game" class="hover:text-yellow-300 transition-colors mario-font text-sm">PLAY</a>
-                <!-- <a href="https://supermarioplay.com" target="_blank" class="hover:text-yellow-300 transition-colors mario-font text-sm">MORE GAMES</a> -->
             </nav>
-            <button class="md:hidden focus:outline-none">
+            <button id="mobileMenuBtn" class="md:hidden focus:outline-none">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                 </svg>
             </button>
         </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="mobile-menu hidden md:hidden bg-red-700 border-t-2 border-yellow-400">
+            <div class="container mx-auto px-4 py-2">
+                <a href="#" class="block py-2 text-center mario-font text-xs hover:text-yellow-300 transition-colors">HOME</a>
+                <a href="#game" class="block py-2 text-center mario-font text-xs hover:text-yellow-300 transition-colors">PLAY</a>
+            </div>
+        </div>
     </header>
 
     <!-- Game Section -->
-    <section id="game" class="flex-grow py-6 px-4 relative z-10">
+    <section id="game" class="flex-grow py-4 sm:py-6 px-2 sm:px-4 relative z-10 game-section">
         <div class="container mx-auto">
-            <h2 class="mario-font text-center text-xl md:text-2xl mb-4 text-yellow-300">PLAY SUPER MARIO</h2>
-            <div class="game-container mx-auto bg-black pixel-border relative overflow-hidden">
-                <iframe src="https://html5.gamemonetize.co/jdhaurvs0amym6zhmca8qm0za3cjukne/" width="100%" height="100%" frameborder="0" allowfullscreen class="absolute inset-0"></iframe>
+            <h2 class="mario-font text-center text-sm sm:text-xl md:text-2xl mb-2 sm:mb-4 text-yellow-300">PLAY SUPER MARIO</h2>
+            
+            <!-- Game Container with responsive iframe -->
+            <div id="gameContainer" class="game-container mx-auto bg-black pixel-border relative overflow-hidden">
+                <!-- Fullscreen button for mobile -->
+                <button id="fullscreenBtn" class="fullscreen-btn hidden sm:block">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                        <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+                    </svg>
+                </button>
+                
+                <!-- Game iframe -->
+                <iframe id="gameFrame" src="https://html5.gamemonetize.co/jdhaurvs0amym6zhmca8qm0za3cjukne/" 
+                        width="100%" height="100%" 
+                        frameborder="0" 
+                        allowfullscreen 
+                        class="absolute inset-0"></iframe>
             </div>
-            <div class="mt-4 text-center mario-font text-sm">
-                <p>Use arrow keys to move and space bar to jump</p>
+            
+            <!-- Game Controls Info -->
+            <div class="mt-2 sm:mt-4 text-center">
+                <!-- Desktop Controls -->
+                <p class="mario-font text-xs sm:text-sm hidden sm:block">Use arrow keys to move and space bar to jump</p>
+                
+                <!-- Mobile Controls -->
+                <div class="block sm:hidden">
+                    <p class="mario-font text-xs text-yellow-200">Touch controls available on screen</p>
+                    <button id="rotateReminder" class="mt-1 bg-yellow-500 text-black mario-font text-xs px-3 py-1 rounded-md">
+                        Tap for best experience in landscape
+                    </button>
+                    <button id="enterFullscreen" class="mt-1 ml-2 bg-blue-600 text-white mario-font text-xs px-3 py-1 rounded-md">
+                        Fullscreen
+                    </button>
+                </div>
             </div>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer class="bg-black text-white py-4 border-t-4 border-red-600 relative z-10">
+    <footer id="siteFooter" class="bg-black text-white py-3 sm:py-4 border-t-4 border-red-600 relative z-10">
         <div class="container mx-auto px-4">
             <div class="flex flex-col md:flex-row justify-between items-center">
-                <div class="mb-4 md:mb-0 text-center md:text-left">
-                    <p class="text-gray-400 text-sm">© 2025 Super Mario Play. This is a fan-made site.</p>
+                <div class="mb-3 md:mb-0 text-center md:text-left">
+                    <p class="text-gray-400 text-xs sm:text-sm">© 2025 Super Mario Play. This is a fan-made site.</p>
                 </div>
                 <div class="flex space-x-4">
                     <a href="#" class="text-gray-400 hover:text-white transition-colors">
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723 10.054 10.054 0 01-3.127 1.184 4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.937 4.937 0 004.604 3.417 9.868 9.868 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.054 0 13.999-7.496 13.999-13.986 0-.209 0-.42-.015-.63a9.936 9.936 0 002.46-2.548l-.047-.02z"/>
                         </svg>
                     </a>
                     <a href="#" class="text-gray-400 hover:text-white transition-colors">
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
                         </svg>
                     </a>
                     <a href="#" class="text-gray-400 hover:text-white transition-colors">
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
                         </svg>
                     </a>
@@ -121,5 +215,105 @@
             </div>
         </div>
     </footer>
+
+    <!-- JavaScript for Mobile Optimization and Responsiveness -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile menu toggle
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const mobileMenu = document.getElementById('mobileMenu');
+            
+            mobileMenuBtn.addEventListener('click', function() {
+                mobileMenu.classList.toggle('hidden');
+            });
+            
+            // Close menu when clicking on a link
+            const mobileLinks = mobileMenu.querySelectorAll('a');
+            mobileLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    mobileMenu.classList.add('hidden');
+                });
+            });
+            
+            // Handle orientation changes for mobile
+            const gameContainer = document.getElementById('gameContainer');
+            const gameFrame = document.getElementById('gameFrame');
+            const siteHeader = document.getElementById('siteHeader');
+            const siteFooter = document.getElementById('siteFooter');
+            const gameSection = document.querySelector('.game-section');
+            
+            // Detect orientation changes
+            window.addEventListener('orientationchange', function() {
+                setTimeout(adjustLayoutForOrientation, 100);
+            });
+            
+            // Initial call to set correct layout
+            adjustLayoutForOrientation();
+            
+            function adjustLayoutForOrientation() {
+                if (window.innerWidth <= 640) {
+                    if (window.orientation === 90 || window.orientation === -90) {
+                        // Landscape mode on mobile
+                        siteHeader.classList.add('header-compact');
+                        gameSection.classList.add('game-section-compact');
+                        siteFooter.classList.add('footer-compact');
+                    } else {
+                        // Portrait mode on mobile
+                        siteHeader.classList.remove('header-compact');
+                        gameSection.classList.remove('game-section-compact');
+                        siteFooter.classList.remove('footer-compact');
+                    }
+                }
+            }
+            
+            // Fullscreen functionality
+            const fullscreenBtn = document.getElementById('fullscreenBtn');
+            const enterFullscreenBtn = document.getElementById('enterFullscreen');
+            const rotateReminder = document.getElementById('rotateReminder');
+            
+            function openFullscreen(element) {
+                if (element.requestFullscreen) {
+                    element.requestFullscreen();
+                } else if (element.webkitRequestFullscreen) { /* Safari */
+                    element.webkitRequestFullscreen();
+                } else if (element.msRequestFullscreen) { /* IE11 */
+                    element.msRequestFullscreen();
+                }
+            }
+            
+            fullscreenBtn.addEventListener('click', function() {
+                openFullscreen(gameContainer);
+            });
+            
+            enterFullscreenBtn.addEventListener('click', function() {
+                openFullscreen(gameContainer);
+            });
+            
+            rotateReminder.addEventListener('click', function() {
+                if (screen.orientation && screen.orientation.lock) {
+                    screen.orientation.lock('landscape').catch(function() {
+                        // Silently fail if orientation lock is not supported
+                    });
+                }
+                setTimeout(function() {
+                    openFullscreen(gameContainer);
+                }, 500);
+            });
+            
+            // Hide fullscreen button when in fullscreen mode
+            document.addEventListener('fullscreenchange', handleFullscreenChange);
+            document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+            document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+            document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+            
+            function handleFullscreenChange() {
+                if (document.fullscreenElement) {
+                    fullscreenBtn.style.opacity = '0';
+                } else {
+                    fullscreenBtn.style.opacity = '1';
+                }
+            }
+        });
+    </script>
 </body>
 </html>
